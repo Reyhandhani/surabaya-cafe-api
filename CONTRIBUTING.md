@@ -6,7 +6,7 @@ Terima kasih sudah tertarik berkontribusi. Ada beberapa cara membantu:
 - **Melengkapi data**, misalnya mengisi `facilities`, `needs_tags`, `instagram`, atau alamat yang masih berisi nama kategori.
 - **Memperbaiki kode atau dokumentasi** lewat pull request.
 
-## Menyiapkan lingkungan
+## Menyiapkan workspace
 
 ```bash
 git clone https://github.com/Reyhandhani/surabaya-cafe-api.git
