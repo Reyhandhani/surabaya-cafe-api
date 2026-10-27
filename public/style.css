@@ -116,29 +116,6 @@ hr {
   margin-bottom: 0.3rem;
 }
 
-/* --- Steps --- */
-
-.step {
-  display: grid;
-  grid-template-columns: 2rem 1fr;
-  gap: 0.5rem;
-  margin-bottom: 1.8rem;
-}
-
-.step-num {
-  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--coffee);
-  padding-top: 0.2rem;
-}
-
-.step-title {
-  font-weight: 600;
-  margin-bottom: 0.4rem;
-  font-size: 0.95rem;
-}
-
 /* --- Code blocks --- */
 
 .code-block {
@@ -195,60 +172,13 @@ hr {
   border-color: var(--coffee);
 }
 
-/* Syntax colors */
-.kw { color: #7c3aed; }
-.str { color: #16a34a; }
-
 .response-block {
   max-height: 420px;
   overflow-y: auto;
 }
 
-/* --- Language Tabs --- */
-
-.lang-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid var(--rule);
-  padding-bottom: 0.5rem;
-}
-
-.lang-tab {
-  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  padding: 0.3rem 0.7rem;
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  background: transparent;
-  color: var(--ink-muted);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.lang-tab:hover {
-  color: var(--coffee);
-  border-color: var(--coffee-light);
-}
-
-.lang-tab.active {
-  background: var(--coffee);
-  color: var(--paper);
-  border-color: var(--coffee);
-}
-
-.lang-content {
-  display: none;
-}
-
-.lang-content.active {
-  display: block;
-}
-
 /* --- Tables --- */
 
-.param-table,
 .endpoint-table {
   width: 100%;
   border-collapse: collapse;
@@ -256,7 +186,6 @@ hr {
   margin-top: 0.3rem;
 }
 
-.param-table th,
 .endpoint-table th {
   text-align: left;
   font-weight: 600;
@@ -266,34 +195,18 @@ hr {
   letter-spacing: 0.03em;
 }
 
-.param-table td,
 .endpoint-table td {
   padding: 0.45rem 0.6rem;
   border-bottom: 1px solid var(--rule);
   vertical-align: top;
 }
 
-.param-table code,
 .endpoint-table code {
   font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
   font-size: 0.78rem;
   background: var(--tag-bg);
   padding: 0.1rem 0.35rem;
   border-radius: 3px;
-}
-
-.method {
-  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 0.15rem 0.4rem;
-  border-radius: 3px;
-}
-
-.method.get {
-  background: #dbeafe;
-  color: #1e40af;
 }
 
 /* --- Notes --- */
@@ -319,12 +232,25 @@ hr {
   color: var(--coffee-light);
 }
 
-.notes code {
+.notes code,
+.note code {
   font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
   font-size: 0.78rem;
   background: var(--tag-bg);
   padding: 0.1rem 0.3rem;
   border-radius: 3px;
+}
+
+.links,
+.note {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  margin-top: 0.8rem;
+}
+
+.links a,
+.note a {
+  color: var(--coffee);
 }
 
 /* --- Footer --- */
@@ -358,6 +284,5 @@ footer {
   html { font-size: 15px; }
   main { padding: 2rem 1rem 3rem; }
   h1 { font-size: 1.8rem; }
-  .step { grid-template-columns: 1.5rem 1fr; }
-  .param-table, .endpoint-table { font-size: 0.78rem; }
+  .endpoint-table { font-size: 0.78rem; }
 }

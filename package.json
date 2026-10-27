@@ -1,32 +1,37 @@
 {
   "name": "surabaya-cafe-api",
   "version": "2.0.0",
-  "description": "REST API terlengkap berisi data cafe terverifikasi aktif di Surabaya — Hybrid OSM + Google Maps verification",
+  "description": "REST API data cafe aktif di Surabaya, diambil dari OpenStreetMap dan diverifikasi di Google Maps",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "scraper": "node src/bot/scraper.js",
-    "verify": "node src/bot/verify_gmaps.js",
-    "pipeline": "node src/bot/scraper.js && node src/bot/verify_gmaps.js",
-    "validate": "node src/bot/verify_links.js",
-    "import": "node src/bot/import_master_csv.js"
+    "test": "node --test test/api.test.js"
   },
   "keywords": [
     "surabaya",
     "cafe",
     "api",
-    "google-maps",
+    "rest-api",
     "coffee-shop",
-    "maps-verification",
     "open-data"
   ],
-  "author": "Antigravity",
-  "license": "ISC",
+  "author": "Reyhandhani",
+  "license": "MIT",
+  "homepage": "https://github.com/Reyhandhani/surabaya-cafe-api#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Reyhandhani/surabaya-cafe-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Reyhandhani/surabaya-cafe-api/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "playwright": "^1.62.1"
+    "express": "^4.19.2"
   }
 }

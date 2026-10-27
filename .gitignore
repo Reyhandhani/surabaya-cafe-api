@@ -7,7 +7,6 @@ node_modules/
 .env.development
 .env.test
 .env.production
-.env.example
 
 # Bot & scraper (private — not pushed to public repo)
 src/

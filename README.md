@@ -1,120 +1,168 @@
 # Surabaya Cafe API
 
-**REST API** publik berisi data cafe aktif di **Surabaya**, diambil dari Google Maps dan diverifikasi secara otomatis. Dataset gratis ini cocok untuk **tugas kuliah**, **proyek komersial**, dan riset tentang kafe di kota Surabaya.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Tentang API Cafe Surabaya ini
+REST API data kafe dan coffee shop aktif di Surabaya. Data awal diambil dari OpenStreetMap, lalu dicek di Google Maps. Cafe yang tutup permanen tidak masuk dataset. Cafe yang tutup sementara tetap ada dengan status `Temporarily closed`.
 
-Surabaya Cafe API menyediakan **874 cafe aktif** yang tersebar di 5 wilayah kota Surabaya: Pusat, Timur, Barat, Selatan, dan Utara. Setiap entri telah diverifikasi terhadap Google Maps cafe bertanda *Permanently closed* otomatis tidak ada di dataset ini. Sementara cafe *Temporarily closed* tetap dipertahankan dengan penanda status.
+Gratis, tanpa API key, dan bisa dipakai untuk tugas kuliah, proyek komersial, atau riset.
 
-### Siapa yang membutuhkan REST API ini?
+## Isi Data
 
-- **Tugas kuliah** — mahasiswa TI, Sistem Informasi, atau Desain grafis yang membutuhkan data lokasi cafe untuk proyek mobile/web (Cafe Finder, rekomendasi tempat nongkrong, analisis spasial, dll.)
-- **Proyek komersial** — startup, UMKM, atau pengembang aplikasi yang membutuhkan dataset cafe Surabaya tanpa perlu mengumpulkan data sendiri dari nol
-- **Riset & analisis** — distribusi coffee shop di Surabaya, pola usaha kuliner, atau studi urban
+- 874 tempat dari 5 wilayah: Surabaya Pusat, Timur, Barat, Selatan, dan Utara
+- Koordinat GPS, rating, dan jumlah ulasan dari Google Maps
+- Filter berdasarkan wilayah, kategori, dan pencarian teks
+- Export JSON dan CSV
 
-## Latar Belakang
+### Status data saat ini
 
-Mengumpulkan data cafe secara manual dari Google Maps memakan waktu dan rentan error, belum lagi harus memastikan setiap cafe masih buka. Bot scraper yang ada sering mengambil data cafe yang sudah tutup permanen atau bahkan tidak ada di Google Maps sama sekali.
+Dataset ini masih dalam tahap pengembangan. Beberapa hal yang perlu diketahui sebelum dipakai:
 
-API ini menyelesaikan masalah itu dengan pipeline otomatis: data diambil dari OpenStreetMap (Overpass API), lalu diverifikasi satu per satu menggunakan headless browser di Google Maps. Hasilnya adalah dataset bersih yang hanya berisi cafe benar-benar aktif di kota Surabaya.
+- Field `facilities`, `needs_tags`, `instagram`, dan `description` masih kosong untuk semua data. Filter `facility` dan `tag` belum menghasilkan apa-apa.
+- Field `whatsapp` hanya terisi untuk 3 tempat.
+- Sekitar 430 alamat masih berisi nama kategori (misalnya `Kedai Kopi`), bukan alamat lengkap.
+- Kategori belum sepenuhnya bersih. Ada tempat yang bukan kafe, seperti mall, restoran, atau dealer motor.
 
-## Fitur
+Bantuan untuk melengkapi data sangat diterima. Lihat [CONTRIBUTING.md](CONTRIBUTING.md).
 
-- **874 cafe terverifikasi** — semua data cafe aktif di Surabaya, diverifikasi via Google Maps
-- **5 wilayah** — Pusat, Timur, Barat, Selatan, Utara
-- **Koordinat GPS** — latitude & longitude presisi, cocok untuk mapping & visualisasi
-- **Rating & review** — data dari Google Maps langsung
-- **Filter lengkap** — cari berdasarkan wilayah, kategori, fasilitas, kebutuhan (wfc, meeting, santai)
-- **Export JSON & CSV** — download langsung tanpa registrasi
-- **Gratis & terbuka** — MIT License, tanpa API key, tanpa batasan
+## Endpoint
 
-## Endpoint REST API
+Base URL: `https://surabaya-cafe-api.vercel.app` (atau `http://localhost:3000` jika dijalankan lokal).
 
-| Method | Path | Deskripsi |
-|--------|------|-----------|
-| `GET` | `/api/cafes` | Semua cafe. Parameter: `?area=`, `?search=`, `?category=`, `?facility=`, `?tag=`, `?sort=`, `?limit=&page=` |
-| `GET` | `/api/cafes/search?q=` | Pencarian cepat berdasarkan nama, alamat, atau deskripsi |
+| Method | Path | Keterangan |
+|--------|------|------------|
+| `GET` | `/api/info` | Info API dan daftar endpoint |
+| `GET` | `/api/cafes` | Daftar cafe. Filter: `area`, `category`, `tag`, `facility`, `search`, `sort`, `limit`, `page` |
+| `GET` | `/api/cafes/search?q=` | Cari berdasarkan nama, alamat, kategori, tag, atau fasilitas |
 | `GET` | `/api/cafes/:id` | Detail satu cafe berdasarkan ID atau nama |
-| `GET` | `/api/areas` | Daftar wilayah beserta jumlah cafe di masing-masing |
-| `GET` | `/api/tags` | Daftar kebutuhan (wfc, meeting, santai, dll) |
-| `GET` | `/api/facilities` | Daftar fasilitas (wifi, ac, parkir, dll) |
+| `POST` | `/api/cafes` | Tambah cafe baru (belum terverifikasi). Butuh header `x-api-key` |
+| `GET` | `/api/areas` | Daftar wilayah dan jumlah cafe |
+| `GET` | `/api/tags` | Daftar tag kebutuhan |
+| `GET` | `/api/facilities` | Daftar fasilitas |
 | `GET` | `/api/stats` | Statistik dataset |
-| `GET` | `/api/export/json` | Download data cafe dalam format JSON |
-| `GET` | `/api/export/csv` | Download data cafe dalam format CSV |
+| `GET` | `/api/export/json` | Download semua data (JSON) |
+| `GET` | `/api/export/csv` | Download semua data (CSV) |
+
+### Format response
+
+- `GET /api/cafes` tanpa `limit` atau `page` mengembalikan array langsung.
+- Jika memakai `limit` atau `page`, response berbentuk objek dengan `data`, `total_data`, `page`, `limit`, dan `total_pages`.
+- `GET /api/cafes/search` dan `POST /api/cafes` mengembalikan objek dengan `success` dan `data`.
+- Error mengembalikan `success: false` dan `message`. Endpoint yang tidak ada mengembalikan 404 dalam format yang sama.
+
+### Menambah cafe
+
+`POST /api/cafes` butuh API key di header `x-api-key`. Key diatur lewat environment variable `ADMIN_API_KEY` di server. Jika variable ini belum diatur, endpoint mengembalikan 503.
+
+```bash
+curl -X POST "http://localhost:3000/api/cafes" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: KEY_ANDA" \
+  -d '{"name": "Contoh Kopi", "address": "Jl. Contoh No. 1, Surabaya", "area": "Surabaya Pusat"}'
+```
+
+Endpoint ini menulis ke `data/cafes.json`, jadi hanya bisa dipakai di server yang filesystemnya bisa ditulis. Di Vercel, penulisan gagal dan API mengembalikan 500.
+
+## Contoh Penggunaan
+
+Ambil cafe di Surabaya Timur:
+
+```bash
+curl "https://surabaya-cafe-api.vercel.app/api/cafes?area=Surabaya%20Timur"
+```
+
+Cari tempat dengan kata kunci "kopi", ambil 10 hasil per halaman:
+
+```bash
+curl "https://surabaya-cafe-api.vercel.app/api/cafes/search?q=kopi"
+curl "https://surabaya-cafe-api.vercel.app/api/cafes?limit=10&page=1"
+```
+
+Dengan JavaScript (fetch):
+
+```javascript
+const res = await fetch("https://surabaya-cafe-api.vercel.app/api/cafes?area=Surabaya%20Pusat&limit=5");
+const { data } = await res.json();
+console.log(data.map((c) => c.name));
+```
+
+Dengan Python:
+
+```python
+import requests
+
+res = requests.get(
+    "https://surabaya-cafe-api.vercel.app/api/cafes",
+    params={"area": "Surabaya Pusat", "limit": 5},
+)
+for cafe in res.json()["data"]:
+    print(cafe["name"], cafe["area"])
+```
 
 ## Struktur Data
 
-Setiap cafe memiliki 20 field. Berikut contoh:
+Setiap cafe memiliki 22 field:
 
 ```json
 {
-  "id": 1581536321,
-  "name": "Sedulur Tunggal Kopi",
-  "map_title": "Sedulur Tunggal Kopi, Surabaya Barat",
-  "category": "Coffee Shop",
+  "id": 1898960185,
+  "name": "Aan Ping Lao",
+  "map_title": "Aan Ping Lao, Surabaya Barat",
+  "category": "Mi",
   "area": "Surabaya Barat",
-  "address": "Jl. Mayjen HR. Muhammad No.246, Surabaya",
-  "latitude": -7.2833562,
-  "longitude": 112.6997967,
-  "price_range": "Rp 50-150 rb",
-  "opening_hours": "24/7",
-  "facilities": ["wifi", "colokan", "ac"],
-  "needs_tags": ["wfc", "santai"],
-  "instagram": "excelsocoffee",
-  "whatsapp": "6281234567890",
+  "address": "Jl. Raya Darmo Baru Barat No.85A",
+  "latitude": -7.2790912,
+  "longitude": 112.6961887,
+  "price_range": "Rp 50–75 rb",
+  "description": "",
+  "opening_hours": "Buka kembali pukul 16.30",
+  "facilities": [],
+  "needs_tags": [],
+  "instagram": "",
+  "whatsapp": "",
+  "data_confidence": "Medium (80%)",
   "verified": true,
   "gmaps_status": "Operational",
-  "gmaps_url": "https://www.google.com/maps/place/...",
-  "gmaps_rating": 4.5,
-  "gmaps_review_count": 128,
-  "last_verified_at": "2025-07-11T12:00:00.000Z"
+  "gmaps_url": "https://www.google.com/maps/place/Aan+Ping+Lao/...",
+  "gmaps_rating": 4,
+  "gmaps_review_count": 1942,
+  "last_verified_at": "2026-08-11T04:39:34.996Z"
 }
 ```
 
 | Field | Tipe | Keterangan |
 |-------|------|------------|
-| `id` | Number | ID unik (hash dari nama + koordinat) |
-| `name` | String | Nama cafe / coffee shop |
+| `id` | Number | ID unik (hash dari nama dan koordinat) |
+| `name` | String | Nama tempat |
 | `map_title` | String | Judul di Google Maps |
-| `category` | String | Jenis: Coffee Shop, Cafe, Restaurant |
-| `area` | String | Wilayah: Surabaya Pusat / Timur / Barat / Selatan / Utara |
+| `category` | String | Kategori dari sumber data, misalnya `Kedai Kopi`, `Kafe`, `Restoran` |
+| `area` | String | `Surabaya Pusat`, `Timur`, `Barat`, `Selatan`, atau `Utara` |
 | `address` | String | Alamat lengkap |
 | `latitude` / `longitude` | Number | Koordinat GPS |
-| `price_range` | String | Rentang harga per orang |
-| `opening_hours` | String | Jam operasional |
-| `facilities` | Array | Fasilitas: wifi, ac, colokan, outdoor, parkir |
-| `needs_tags` | Array | Tag kebutuhan: wfc, meeting, santai, estetik |
-| `instagram` | String | Akun Instagram |
+| `price_range` | String | Kisaran harga per orang |
+| `description` | String | Deskripsi singkat (saat ini kosong) |
+| `opening_hours` | String | Jam buka |
+| `facilities` | Array | Contoh: `wifi`, `ac`, `colokan`, `outdoor`, `parkir` (saat ini kosong) |
+| `needs_tags` | Array | Contoh: `wfc`, `meeting`, `santai`, `estetik` (saat ini kosong) |
+| `instagram` | String | Username Instagram tanpa `@` (saat ini kosong) |
 | `whatsapp` | String | Nomor WhatsApp |
-| `verified` | Boolean | Terverifikasi ada di Google Maps |
-| `gmaps_status` | String | `Operational` atau `Temporarily closed` |
-| `gmaps_url` | String | Tautan langsung ke Google Maps |
+| `data_confidence` | String | Tingkat keyakinan data |
+| `verified` | Boolean | `true` jika sudah dicek di Google Maps |
+| `gmaps_status` | String | `Operational`, `Temporarily closed`, atau `Unverified` |
+| `gmaps_url` | String | Link ke Google Maps |
 | `gmaps_rating` | Number | Rating Google Maps (0-5) |
-| `gmaps_review_count` | Number | Jumlah review di Google Maps |
-| `last_verified_at` | String | Terakhir diverifikasi (ISO 8601) |
+| `gmaps_review_count` | Number | Jumlah ulasan |
+| `last_verified_at` | String | Waktu terakhir dicek (ISO 8601) |
 
-### Field penting untuk pengecekan keabsahan
+Untuk memastikan tempat masih buka, cek `verified` (harus `true`) dan `gmaps_status` (`Operational`). Gunakan `gmaps_url` untuk pengecekan manual.
 
-- `verified` — `true` berarti cafe sudah diverifikasi ada dan buka di Google Maps
-- `gmaps_status` — `Operational` (buka normal) atau `Temporarily closed` (tutup sementara, bukan permanen)
-- `gmaps_url` — tautan langsung ke lokasi di Google Maps, bisa dipakai untuk verifikasi manual
-
-## Akses API
-
-### Via URL langsung (tanpa install)
-
-```
-https://surabaya-cafe-api.vercel.app/api/cafes
-https://surabaya-cafe-api.vercel.app/api/cafes?area=Surabaya%20Timur
-https://surabaya-cafe-api.vercel.app/api/cafes/search?q=kopi%20tuku
-```
-
-### Download dataset
+## Download
 
 - [JSON](https://surabaya-cafe-api.vercel.app/api/export/json)
 - [CSV](https://surabaya-cafe-api.vercel.app/api/export/csv)
 
-### Jalankan sendiri
+## Menjalankan Lokal
+
+Membutuhkan Node.js 18 atau lebih baru.
 
 ```bash
 git clone https://github.com/Reyhandhani/surabaya-cafe-api.git
@@ -123,12 +171,30 @@ npm install
 npm start
 ```
 
-Dashboard tersedia di `http://localhost:3000`, API di `http://localhost:3000/api/cafes`.
+Dashboard tersedia di `http://localhost:3000` dan API di `http://localhost:3000/api/cafes`.
+
+### Test
+
+```bash
+npm test
+```
+
+Test menjalankan semua endpoint terhadap salinan data sementara, jadi `data/cafes.json` tidak berubah.
+
+### Spesifikasi OpenAPI
+
+Spesifikasi lengkap ada di [docs/openapi.yaml](docs/openapi.yaml). Bisa dibuka di [Swagger Editor](https://editor.swagger.io/) atau dipakai untuk membuat client.
+
+## Kontribusi
+
+Silakan buka issue atau pull request. Panduan lengkap ada di [CONTRIBUTING.md](CONTRIBUTING.md). Untuk laporan keamanan, lihat [SECURITY.md](SECURITY.md).
+
+## Sumber Data dan Lisensi
+
+- Data lokasi berasal dari [OpenStreetMap](https://www.openstreetmap.org/copyright), © OpenStreetMap contributors, dengan lisensi ODbL.
+- Rating, ulasan, dan link Google Maps berasal dari Google Maps. Penggunaannya tunduk pada ketentuan Google.
+- Kode API dilisensikan di bawah [MIT License](LICENSE).
 
 ## Author
 
-Created by [Reyhandhani](https://github.com/Reyhandhani).
-
-## Lisensi
-
-MIT License — bebas digunakan untuk tugas kuliah, proyek pribadi, maupun komersial tanpa dipungut biaya.
+[Reyhandhani](https://github.com/Reyhandhani)

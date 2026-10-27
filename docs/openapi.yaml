@@ -1,0 +1,355 @@
+openapi: 3.0.3
+info:
+  title: Surabaya Cafe API
+  version: 2.0.0
+  description: REST API data cafe dan coffee shop di Surabaya. Gratis, tanpa API key untuk pembacaan data.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: https://surabaya-cafe-api.vercel.app
+    description: Produksi
+  - url: http://localhost:3000
+    description: Lokal
+tags:
+  - name: Cafe
+    description: Data cafe, pencarian, dan detail.
+  - name: Referensi
+    description: Daftar wilayah, tag, fasilitas, dan statistik.
+  - name: Export
+    description: Download seluruh dataset.
+  - name: Admin
+    description: Penambahan data. Butuh API key.
+paths:
+  /api/info:
+    get:
+      operationId: getInfo
+      security: []
+      tags: [Referensi]
+      summary: Info API dan daftar endpoint
+      responses:
+        '200':
+          description: Info API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: success }
+                  message: { type: string }
+                  version: { type: string, example: 2.0.0 }
+                  total_data: { type: integer }
+                  verified_count: { type: integer }
+                  endpoints: { type: object, additionalProperties: { type: string } }
+  /api/cafes:
+    get:
+      operationId: listCafes
+      security: []
+      tags: [Cafe]
+      summary: Daftar cafe dengan filter dan paginasi opsional
+      description: Tanpa `limit` atau `page`, respons berupa array. Jika salah satunya diisi, respons berupa objek paginasi.
+      parameters:
+        - name: area
+          in: query
+          schema: { type: string, example: Surabaya Timur }
+          description: Nama wilayah, tidak case-sensitive.
+        - name: category
+          in: query
+          schema: { type: string }
+          description: Sebagian nama kategori, tidak case-sensitive.
+        - name: tag
+          in: query
+          schema: { type: string, example: wfc }
+          description: Sebagian nama tag kebutuhan.
+        - name: facility
+          in: query
+          schema: { type: string, example: wifi }
+          description: Sebagian nama fasilitas.
+        - name: search
+          in: query
+          schema: { type: string }
+          description: Cari di nama, deskripsi, alamat, wilayah, kategori, tag, dan fasilitas.
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [name_asc, name_desc, area]
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, default: 10 }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+      responses:
+        '200':
+          description: Daftar cafe
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items: { $ref: '#/components/schemas/Cafe' }
+                  - $ref: '#/components/schemas/Paginated'
+    post:
+      tags: [Admin]
+      operationId: createCafe
+      summary: Tambah cafe baru (belum terverifikasi)
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, address]
+              properties:
+                name: { type: string }
+                address: { type: string }
+                area: { type: string, example: Surabaya Pusat }
+                category: { type: string }
+                latitude: { type: number }
+                longitude: { type: number }
+                price_range: { type: string }
+                description: { type: string }
+                opening_hours: { type: string }
+                facilities:
+                  description: Array atau string dipisah koma.
+                  oneOf:
+                    - type: array
+                      items: { type: string }
+                    - type: string
+                needs_tags:
+                  description: Array atau string dipisah koma.
+                  oneOf:
+                    - type: array
+                      items: { type: string }
+                    - type: string
+                instagram: { type: string, description: Tanda @ di depan akan dihapus. }
+                whatsapp: { type: string }
+      responses:
+        '201':
+          description: Cafe berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string }
+                  data: { $ref: '#/components/schemas/Cafe' }
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+        '503':
+          description: ADMIN_API_KEY belum diatur di server
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorBody' }
+  /api/cafes/search:
+    get:
+      operationId: searchCafes
+      security: []
+      tags: [Cafe]
+      summary: Pencarian cepat
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Hasil pencarian
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  total: { type: integer }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Cafe' }
+        '400':
+          $ref: '#/components/responses/Error'
+  /api/cafes/{id}:
+    get:
+      operationId: getCafe
+      security: []
+      tags: [Cafe]
+      summary: Detail satu cafe
+      description: Parameter bisa berupa ID numerik atau sebagian nama. Pencocokan nama tidak case-sensitive.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Detail cafe
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cafe' }
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+  /api/areas:
+    get:
+      operationId: listAreas
+      security: []
+      tags: [Referensi]
+      summary: Daftar wilayah beserta jumlah cafe
+      responses:
+        '200':
+          description: Daftar wilayah
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name: { type: string }
+                    count: { type: integer }
+  /api/tags:
+    get:
+      operationId: listTags
+      security: []
+      tags: [Referensi]
+      summary: Daftar tag kebutuhan beserta jumlahnya
+      responses:
+        '200':
+          description: Daftar tag
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name: { type: string }
+                    count: { type: integer }
+  /api/facilities:
+    get:
+      operationId: listFacilities
+      security: []
+      tags: [Referensi]
+      summary: Daftar fasilitas beserta jumlahnya
+      responses:
+        '200':
+          description: Daftar fasilitas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name: { type: string }
+                    count: { type: integer }
+  /api/stats:
+    get:
+      operationId: getStats
+      security: []
+      tags: [Referensi]
+      summary: Statistik dataset
+      responses:
+        '200':
+          description: Statistik
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer }
+                  verified: { type: integer }
+                  temporarily_closed: { type: integer }
+                  areas:
+                    type: object
+                    additionalProperties: { type: integer }
+  /api/export/json:
+    get:
+      operationId: exportJson
+      security: []
+      tags: [Export]
+      summary: Download semua data dalam format JSON
+      responses:
+        '200':
+          description: File JSON
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Cafe' }
+  /api/export/csv:
+    get:
+      operationId: exportCsv
+      security: []
+      tags: [Export]
+      summary: Download semua data dalam format CSV
+      responses:
+        '200':
+          description: File CSV
+          content:
+            text/csv:
+              schema: { type: string }
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+  responses:
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorBody' }
+  schemas:
+    ErrorBody:
+      type: object
+      properties:
+        success: { type: boolean, example: false }
+        message: { type: string }
+    Paginated:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        total_data: { type: integer }
+        page: { type: integer }
+        limit: { type: integer }
+        total_pages: { type: integer }
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Cafe' }
+    Cafe:
+      type: object
+      properties:
+        id: { type: integer, description: Hash dari nama dan koordinat }
+        name: { type: string }
+        map_title: { type: string }
+        category: { type: string }
+        area: { type: string }
+        address: { type: string }
+        latitude: { type: number }
+        longitude: { type: number }
+        price_range: { type: string }
+        description: { type: string }
+        opening_hours: { type: string }
+        facilities: { type: array, items: { type: string } }
+        needs_tags: { type: array, items: { type: string } }
+        instagram: { type: string }
+        whatsapp: { type: string }
+        data_confidence: { type: string }
+        verified: { type: boolean }
+        gmaps_status:
+          type: string
+          enum: [Operational, Temporarily closed, Unverified]
+        gmaps_url: { type: string }
+        gmaps_rating: { type: number, minimum: 0, maximum: 5 }
+        gmaps_review_count: { type: integer }
+        last_verified_at: { type: string, format: date-time }

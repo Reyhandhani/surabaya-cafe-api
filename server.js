@@ -5,7 +5,7 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DATA_FILE = path.join(__dirname, 'data', 'cafes.json');
+const DATA_FILE = process.env.CAFES_FILE || path.join(__dirname, 'data', 'cafes.json');
 
 // Middleware
 app.use(cors());
@@ -32,6 +32,17 @@ function saveCafes(cafes) {
     console.error('Error writing cafes.json:', err);
     return false;
   }
+}
+
+function requireApiKey(req, res, next) {
+  const key = process.env.ADMIN_API_KEY;
+  if (!key) {
+    return res.status(503).json({ success: false, message: 'Fitur tambah data belum diaktifkan' });
+  }
+  if (req.get('x-api-key') !== key) {
+    return res.status(401).json({ success: false, message: 'API key tidak valid' });
+  }
+  next();
 }
 
 function generateId(name, lat, lon) {
@@ -253,7 +264,7 @@ app.get('/api/stats', (req, res) => {
  * @route POST /api/cafes
  * @description Tambah cafe baru manual
  */
-app.post('/api/cafes', (req, res) => {
+app.post('/api/cafes', requireApiKey, (req, res) => {
   const cafes = getCafes();
   const body = req.body;
 
@@ -290,7 +301,9 @@ app.post('/api/cafes', (req, res) => {
   };
 
   cafes.push(newCafe);
-  saveCafes(cafes);
+  if (!saveCafes(cafes)) {
+    return res.status(500).json({ success: false, message: 'Gagal menyimpan data cafe' });
+  }
 
   res.status(201).json({
     success: true,
@@ -337,11 +350,29 @@ app.get('/api/export/csv', (req, res) => {
   res.send(csv);
 });
 
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: 'Endpoint tidak ditemukan' });
+});
+
+app.use((err, req, res, next) => {
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ success: false, message: 'Body JSON tidak valid' });
+  }
+  if (err instanceof URIError) {
+    return res.status(400).json({ success: false, message: 'Parameter URL tidak valid' });
+  }
+  if (err.status && err.status < 500) {
+    return res.status(err.status).json({ success: false, message: err.message });
+  }
+  console.error(err);
+  res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server' });
+});
+
 // Export for Vercel serverless
 module.exports = app;
 
 // Start Server (local dev only — Vercel handles this automatically)
-if (!process.env.VERCEL) {
+if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`\n${'='.repeat(50)}`);
     console.log(`SURABAYA CAFE API SERVER v2.0 READY`);

@@ -4,32 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Surabaya Cafe API — REST API Gratis Data Cafe Surabaya</title>
-  <meta name="description" content="REST API gratis berisi data cafe aktif di Surabaya. 874+ cafe terverifikasi via Google Maps, filter by wilayah, kategori, fasilitas. Tanpa API key, cocok untuk tugas kuliah dan proyek komersial.">
+  <meta name="description" content="REST API gratis berisi data cafe dan coffee shop di Surabaya. Filter berdasarkan wilayah dan kategori. Tanpa API key.">
   <meta name="keywords" content="api cafe surabaya, surabaya cafe api, rest api cafe, data cafe surabaya, coffee shop surabaya, open data api">
   <meta name="author" content="Reyhandhani">
   <link rel="canonical" href="https://surabaya-cafe-api.vercel.app/">
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://surabaya-cafe-api.vercel.app/">
   <meta property="og:title" content="Surabaya Cafe API — REST API Gratis Data Cafe Surabaya">
-  <meta property="og:description" content="REST API gratis berisi data cafe aktif di Surabaya. 874+ cafe terverifikasi via Google Maps, filter by wilayah, kategori, fasilitas. Tanpa API key.">
+  <meta property="og:description" content="REST API gratis berisi data cafe dan coffee shop di Surabaya. Tanpa API key.">
   <meta property="og:site_name" content="Surabaya Cafe API">
 
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Surabaya Cafe API — REST API Gratis Data Cafe Surabaya">
-  <meta name="twitter:description" content="REST API gratis berisi data cafe aktif di Surabaya. 874+ cafe terverifikasi via Google Maps.">
+  <meta name="twitter:description" content="REST API gratis berisi data cafe dan coffee shop di Surabaya.">
 
-  <!-- Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebAPI",
     "name": "Surabaya Cafe API",
-    "description": "REST API gratis berisi data cafe aktif di Surabaya. 874+ cafe terverifikasi via Google Maps.",
+    "description": "REST API gratis berisi data cafe dan coffee shop di Surabaya.",
     "url": "https://surabaya-cafe-api.vercel.app/",
-    "documentation": "https://surabaya-cafe-api.vercel.app/",
+    "documentation": "https://github.com/Reyhandhani/surabaya-cafe-api#readme",
+    "license": "https://opensource.org/licenses/MIT",
     "provider": {
       "@type": "Person",
       "name": "Reyhandhani",
@@ -42,137 +40,60 @@
 </head>
 <body>
   <main>
-    <!-- Masthead -->
     <header>
       <p class="kicker">OPEN DATA API</p>
       <h1>Surabaya Cafe API</h1>
-      <p class="tagline">Data cafe aktif terverifikasi di Google Maps. Gratis, terbuka, tanpa syarat.</p>
-      <div class="stats" id="stats">
-        <span class="stat"><strong id="stat-total">--</strong> cafe aktif</span>
+      <p class="tagline">Data cafe dan coffee shop di Surabaya. Gratis, tanpa API key.</p>
+      <div class="stats">
+        <span class="stat"><strong id="stat-total">--</strong> tempat</span>
         <span class="stat-sep">&middot;</span>
         <span class="stat"><strong id="stat-areas">--</strong> wilayah</span>
-        <span class="stat-sep">&middot;</span>
-        <span class="stat">terakhir diperbarui <strong id="stat-date">--</strong></span>
       </div>
+      <p class="links">
+        <a href="/api/cafes">Lihat data</a> &middot;
+        <a href="/api/export/json">JSON</a> &middot;
+        <a href="/api/export/csv">CSV</a> &middot;
+        <a href="https://github.com/Reyhandhani/surabaya-cafe-api#readme" target="_blank" rel="noopener">Dokumentasi</a>
+      </p>
     </header>
 
     <hr>
 
-    <!-- Cara pakai -->
     <section>
       <p class="section-label">01</p>
-      <h2>Cara Pakai</h2>
-
-      <div class="step">
-        <p class="step-num">1</p>
-        <div>
-          <p class="step-title">Ambil seluruh data cafe</p>
-
-          <!-- Tab Bahasa -->
-          <div class="lang-tabs">
-            <button class="lang-tab active" data-lang="curl">Curl</button>
-            <button class="lang-tab" data-lang="javascript">JavaScript</button>
-            <button class="lang-tab" data-lang="python">Python</button>
-            <button class="lang-tab" data-lang="browser">Browser</button>
-          </div>
-
-          <!-- Curl -->
-          <div class="lang-content active" id="lang-curl">
-            <div class="code-block">
-              <pre><code><span class="kw">curl</span> <span id="code-url-curl">...</span></code></pre>
-              <button class="copy-btn" data-target="code-url-curl">Salin</button>
-            </div>
-          </div>
-
-          <!-- JavaScript -->
-          <div class="lang-content" id="lang-javascript">
-            <div class="code-block">
-              <pre><code><span class="kw">fetch</span>(<span class="str">'<span id="code-url-1">...</span>'</span>)
-  .<span class="kw">then</span>(r =&gt; r.<span class="kw">json</span>())
-  .<span class="kw">then</span>(data =&gt; <span class="kw">console</span>.<span class="kw">log</span>(data));</code></pre>
-              <button class="copy-btn" data-target="code-url-1">Salin</button>
-            </div>
-          </div>
-
-          <!-- Python -->
-          <div class="lang-content" id="lang-python">
-            <div class="code-block">
-              <pre><code><span class="kw">import</span> requests
-
-url = <span class="str">'<span id="code-url-python">...</span>'</span>
-data = requests.<span class="kw">get</span>(url).<span class="kw">json</span>()
-<span class="kw">print</span>(data)</code></pre>
-              <button class="copy-btn" data-target="lang-python">Salin</button>
-            </div>
-          </div>
-
-          <!-- Browser -->
-          <div class="lang-content" id="lang-browser">
-            <div class="code-block">
-              <pre><code>Buka langsung di browser:
-<span id="code-url-browser">...</span>
-
-Data akan ditampilkan sebagai JSON.</code></pre>
-              <button class="copy-btn" data-target="lang-browser">Salin</button>
-            </div>
-          </div>
-
-        </div>
+      <h2>Contoh Pemakaian</h2>
+      <div class="code-block">
+        <pre><code id="code-curl">curl ...</code></pre>
+        <button class="copy-btn" data-target="code-curl">Salin</button>
       </div>
-
-      <div class="step">
-        <p class="step-num">2</p>
-        <div>
-          <p class="step-title">Filter hasil</p>
-          <table class="param-table">
-            <thead>
-              <tr><th>Parameter</th><th>Contoh</th><th>Keterangan</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><code>area</code></td><td><code>?area=Surabaya Timur</code></td><td>Wilayah kota</td></tr>
-              <tr><td><code>search</code></td><td><code>?search=kopi tuku</code></td><td>Cari nama / alamat</td></tr>
-              <tr><td><code>category</code></td><td><code>?category=Coffee Shop</code></td><td>Jenis kafe</td></tr>
-              <tr><td><code>facility</code></td><td><code>?facility=wifi</code></td><td>Fasilitas</td></tr>
-              <tr><td><code>tag</code></td><td><code>?tag=wfc</code></td><td>Kebutuhan (wfc, meeting, santai)</td></tr>
-              <tr><td><code>sort</code></td><td><code>?sort=name_asc</code></td><td>Urutkan (name_asc, name_desc, area)</td></tr>
-              <tr><td><code>limit</code></td><td><code>?limit=20&page=1</code></td><td>Paginasi</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <p class="note">Tambahkan parameter untuk memfilter, misalnya <code>?area=Surabaya%20Timur</code> atau <code>?search=kopi</code>.</p>
     </section>
 
     <hr>
 
-    <!-- Endpoint -->
     <section>
       <p class="section-label">02</p>
-      <h2>Endpoint</h2>
+      <h2>Endpoint Utama</h2>
       <table class="endpoint-table">
         <thead>
-          <tr><th>Method</th><th>Path</th><th>Fungsi</th></tr>
+          <tr><th>Path</th><th>Fungsi</th></tr>
         </thead>
         <tbody>
-          <tr><td><span class="method get">GET</span></td><td><code>/api/cafes</code></td><td>Semua cafe + filter</td></tr>
-          <tr><td><span class="method get">GET</span></td><td><code>/api/cafes/search?q=</code></td><td>Pencarian cepat</td></tr>
-          <tr><td><span class="method get">GET</span></td><td><code>/api/cafes/:id</code></td><td>Detail cafe by ID</td></tr>
-          <tr><td><span class="method get">GET</span></td><td><code>/api/areas</code></td><td>Daftar wilayah</td></tr>
-          <tr><td><span class="method get">GET</span></td><td><code>/api/tags</code></td><td>Daftar kebutuhan</td></tr>
-          <tr><td><span class="method get">GET</span></td><td><code>/api/facilities</code></td><td>Daftar fasilitas</td></tr>
-          <tr><td><span class="method get">GET</span></td><td><code>/api/stats</code></td><td>Statistik data</td></tr>
-          <tr><td><span class="method get">GET</span></td><td><code>/api/export/json</code></td><td>Download JSON</td></tr>
-          <tr><td><span class="method get">GET</span></td><td><code>/api/export/csv</code></td><td>Download CSV</td></tr>
-          <tr><td><span class="method get">GET</span></td><td><code>/api/info</code></td><td>Info API (JSON)</td></tr>
+          <tr><td><code>/api/cafes</code></td><td>Daftar cafe, bisa difilter</td></tr>
+          <tr><td><code>/api/cafes/search?q=</code></td><td>Cari berdasarkan kata kunci</td></tr>
+          <tr><td><code>/api/cafes/:id</code></td><td>Detail satu cafe</td></tr>
+          <tr><td><code>/api/areas</code></td><td>Daftar wilayah dan jumlahnya</td></tr>
+          <tr><td><code>/api/stats</code></td><td>Statistik dataset</td></tr>
         </tbody>
       </table>
+      <p class="note">Daftar lengkap endpoint, parameter, dan format respons ada di <a href="https://github.com/Reyhandhani/surabaya-cafe-api#readme" target="_blank" rel="noopener">README</a>.</p>
     </section>
 
     <hr>
 
-    <!-- Contoh respons -->
     <section>
       <p class="section-label">03</p>
-      <h2>Contoh Respons</h2>
+      <h2>Contoh Data</h2>
       <div class="code-block response-block">
         <pre><code id="sample-response">Memuat contoh data...</code></pre>
       </div>
@@ -180,20 +101,18 @@ Data akan ditampilkan sebagai JSON.</code></pre>
 
     <hr>
 
-    <!-- Catatan -->
     <section>
       <p class="section-label">04</p>
       <h2>Catatan</h2>
       <ul class="notes">
-        <li>Setiap cafe memiliki status <code>verified</code> dan <code>gmaps_status</code>. Cafe bertanda <em>Permanently closed</em> di Google Maps otomatis tidak ada di dataset ini.</li>
-        <li>Data diperbarui secara berkali melalui pipeline scraping OpenStreetMap + verifikasi Google Maps otomatis.</li>
-        <li>Field <code>opening_hours</code>, <code>price_range</code>, dan <code>address</code> mungkin kosong jika Google Maps tidak menampilkannya. Data yang kosong bukan berarti cafe tidak ada.</li>
-        <li>Lisensi: MIT. Bebas dipakai untuk proyek apapun.</li>
+        <li>Data lokasi berasal dari OpenStreetMap, lalu dicek di Google Maps. Tempat yang tutup permanen tidak masuk dataset.</li>
+        <li>Beberapa field belum terisi, misalnya <code>facilities</code>, <code>needs_tags</code>, dan <code>instagram</code>. Kategori dan alamat juga belum sepenuhnya bersih.</li>
+        <li>Kontribusi data dan kode sangat diterima. Lihat <a href="https://github.com/Reyhandhani/surabaya-cafe-api/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md</a>.</li>
       </ul>
     </section>
 
     <footer>
-      <p>Surabaya Cafe API &middot; Open Data &middot; MIT License</p>
+      <p>Surabaya Cafe API &middot; MIT License &middot; Data OpenStreetMap © OpenStreetMap contributors</p>
       <p class="credit">Author: <a href="https://github.com/Reyhandhani" target="_blank" rel="noopener">Reyhandhani</a></p>
     </footer>
   </main>
